@@ -1,0 +1,247 @@
+
+/**
+ * Imports.
+ */
+
+@import 'ianstormtaylor/reset';
+
+body {
+  font: 300 16px/1.5 'Source Sans Pro', sans-serif;
+  color: white;
+  background-color: #222128;
+}
+
+.App-title {
+  text-align: center;
+  margin-bottom: 3em;
+  font-size: 3em;
+}
+
+.App-description {
+  font-size: 1.3em;
+  margin-bottom: 1em;
+  max-width: 27em;
+}
+
+.App-poster {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.Prediction--header {
+  margin-top: 12px;
+  position: relative;
+  top: 35px;
+  font-size: 1.3em;
+}
+.Skip--button {
+  position: relative;
+  left: 87px;
+  bottom: 32px;
+  background-color: #ff5b3f;
+  text-transform: uppercase;
+  display: inline-block;
+  transition: all 200ms;
+  text-decoration: none;
+  overflow: 'hidden';
+  font-size: 13px;
+  font-weight: 300;
+  padding: 9px 17px;
+  border-radius: 3px;
+  line-height: 16px;
+  color: white;
+  border: 0;
+  margin: 0;
+}
+
+a {
+  color: #847AD1;
+  text-decoration: underline;
+}
+
+img {
+  width: 214px;
+  height: 322px;
+}
+
+a:hover {
+  color: color(#847AD1 tint(20%));
+}
+
+pre {
+  font: 300 12px/1.2 "Source Code", "Source Code Pro",  monospace;
+  color: color(#BEC4DD) tint(50%));
+}
+
+/**
+ * Sections.
+ */
+
+.Section {
+  display: flex;
+  justify-content: center;
+}
+
+.Section-title {
+  font-size: 1.5em;
+  margin-bottom: .25em;
+  text-align: center;
+}
+
+.Section-description {
+  color: #BEC4DD;
+  margin-bottom: 1em;
+}
+
+.Section--usage,
+.Section--install {
+  padding-top: 2em;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+
+.Section-example {
+  margin-top: 1em;
+  border-radius: .2em;
+  background: rgb(237, 237, 237);
+  padding: 2em;
+  overflow: hidden;
+  margin-left: auto;
+  color: rgb(140, 133, 133);
+  margin-right: auto;
+}
+
+.Section-example-code {
+  font-size: 1em;
+}
+
+.Section-example-code b {
+  font-weight: 600;
+  color: #847AD1;
+}
+
+.Section-example-code em {
+  font-style: normal;
+  font-weight: 600;
+  color: #5790EF;
+}
+
+.Section-example-code s {
+  font-style: normal;
+  text-decoration: none;
+  color: #605668;
+}
+
+.Section-legend {
+  text-align: center;
+  color: #BEC4DD;
+  margin-top: .75em;
+}
+
+.Header,
+.Section,
+.Footer {
+  padding: 10em 2em;
+}
+
+.Header {
+  height: 60vh;
+  position: relative;
+}
+
+
+/**
+ * Header.
+ */
+
+.Header {
+  text-align: center;
+  padding-bottom: 6em;
+}
+
+.Header-title {
+  font-size: 3.5em;
+  margin-bottom: 2em;
+}
+
+.Header-subtitle {
+  font-size: 2.5em;
+  margin-bottom: 1em;
+}
+
+.Header-description {
+  font-size: 1.8em;
+  max-width: 18em;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.Header-github-link {
+  display: block;
+  position: absolute;
+  top: 3em;
+  right: -6.5em;
+  padding: 1em;
+  width: 20em;
+  text-align: center;
+  background-color: #847AD1;
+  text-transform: uppercase;
+  font-size: .9em;
+  color: white;
+  letter-spacing: 1px;
+  text-decoration: none;
+  white-space: nowrap;
+  transform: rotate(45deg);
+  transform-origin: 50% 50%;
+}
+
+.Header-github-link:hover {
+  font-weight: normal;
+  color: white;
+}
+
+/**
+ * Footer.
+ */
+
+.Footer {
+  text-align: center;
+}
+
+.Footer-title {
+  font-size: 1.5em;
+}
+
+.Footer-subtitle {
+  color: #BEC4DD;
+  font-size: .7em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: .7em;
+}
+
+/**
+ * Rating.
+ */
+
+.Rating {
+  display: flex;
+  justify-content: center;
+}
+
+.Star {
+  cursor: pointer;
+  font-size: 2.6rem;
+  line-height: 2.6rem;
+  color: rgb(227, 227, 227);
+  text-shadow: rgb(210, 209, 209) 0px 1px 0px;
+}
+
+.Star.starred {
+  color: rgb(255, 204, 0);
+  text-shadow: rgb(220, 176, 0) 0px 1px 0px;
+}
+

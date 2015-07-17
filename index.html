@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <title>Mind - Flexible neural network library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/build/index.css">
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,300italic' rel='stylesheet' type='text/css'>
+  <link rel="icon" href="/build/images/favicon.png">
+</head>
+<body>
+  <header class="Header">
+    <h1 class="Header-title">Mind</h1>
+    <h2 class="Header-subtitle">Flexible neural networks in JavaScript.</h2>
+    <p class="Header-description">Mind lets you easily create networks that learn to make predictions.</p>
+    <a class="Header-github-link" href="https://github.com/stevenmiller888/mind">Star on GitHub</a>
+  </header>
+
+  <section class="Section">
+  </section>
+
+  <section class="Section Section--usage">
+    <h1 class="Section-title">Demo Code</h1>
+    <figure class="Section-example">
+      <pre class="Section-example-code">
+  let genres = [
+    'Action',
+    'Adventure',
+    'Animation',
+    'Comedy',
+    'Drama',
+    'Family',
+    'Musical',
+    'Mystery',
+    'Romance',
+    'Sci-Fi',
+    'Sport',
+    'Thriller',
+    'War'
+  ];
+
+  let input = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+
+  movie.genres.forEach(function(genre) {
+    let index = genres.indexOf(genre);
+    if (index > -1) input[index] = 1;
+  });
+
+  // train the network with the rating given by the user, scaled by 5
+  var mind = Mind()
+    .learn([
+      { input: input, output: [ rating / 5 ] }
+    ]);
+    </figure>
+  </section>
+
+  <section class="Section Section--usage">
+    <h1 class="Section-title">Usage</h1>
+    <figure class="Section-example">
+      <pre class="Section-example-code">
+  var mind = Mind()
+    .learn([
+      { input: [0, 0], output: [0] },
+      { input: [0, 1], output: [1] },
+      { input: [1, 0], output: [1] },
+      { input: [1, 1], output: [0] },
+    ])
+    .predict([0, 1]); // ~1
+    </figure>
+    <p class="Section-legend">Check out the full <a href="https://github.com/stevenmiller888/mind">API on GitHub</a>.</p>
+  </section>
+  
+  <section class="Section Section--install">
+    <h1 class="Section-title">Install it...</h1>
+    <figure class="Section-example">
+      <pre class="Section-example-code">
+$ npm install -g <b>node-mind</b>
+    </figure>
+    <p class="Section-legend">Check out the module <a href="https://npmjs.com/package/node-mind">on NPM</a>.</p>
+  </section>
+
+  <footer class="Footer">
+    <h2 class="Footer-subtitle">Built by</h2>
+    <h1 class="Footer-title">
+      <a href="https://github.com/stevenmiller888">Steven Miller</a>
+    </h1>
+  </footer>
+
+  <script src="/build/index.js"></script>
+</body>
+</html>
