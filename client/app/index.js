@@ -52,11 +52,13 @@ function render({ props, state }, updateState) {
 
   // rate the movie
   function rate(rating) {
+    window.analytics.track('Rated movie');
     rateMovie(rating, movie);
     updateState({ randomIndex: random(movies.length) });
   }
   
   function skip() {
+    window.analytics.track('Skipped movie');
     updateState({ randomIndex: random(movies.length) });
   }
 

@@ -75,6 +75,7 @@ function actions(route) {
       });
 
       let prediction = mind.predict(input) * 5;
+      window.analytics.track('Predicted movie');
 
       return prediction;
     }
