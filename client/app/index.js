@@ -42,10 +42,12 @@ function render({ props, state }, updateState) {
   return (
     <div class='App'>
       <h1 class='App-title'>Demo</h1>
-      <p class='App-description'>Choose a rating. The neural network uses each movie's metadata to figure out the kinds of movies you like. After a few ratings, you'll start to see predictions :)</p>
+      <p class='App-description'>Choose a rating. Mind is using each movie's metadata to figure out the kinds of movies you like. After 10 ratings, you'll start to see predictions :)</p>
       <Poster url={ `/images/${imageName}.jpg` }/>
-      <Rating defaultValue={ 0 } onRate={ rate }/>
-      <button class='Skip--button' onClick={ skip }>Skip</button>
+      <div class='App-rating'>
+        <Rating defaultValue={ 0 } onRate={ rate }/>
+        <button class='Skip--button' onClick={ skip }>Skip</button>
+      </div>
       { numRated > 10 ? <div><h1 class='Prediction--header'>Predicted Rating: </h1><Rating defaultValue={ Math.round(rating) } onRate={ rate } disableHover={true}/></div> : null }
     </div>
   );
@@ -56,7 +58,7 @@ function render({ props, state }, updateState) {
     rateMovie(rating, movie);
     updateState({ randomIndex: random(movies.length) });
   }
-  
+
   function skip() {
     window.analytics.track('Skipped movie');
     updateState({ randomIndex: random(movies.length) });

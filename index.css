@@ -13,8 +13,12 @@ body {
 
 .App-title {
   text-align: center;
-  margin-bottom: 3em;
+  margin-bottom: 2em;
   font-size: 3em;
+}
+
+.App-rating {
+  text-align: center;
 }
 
 .App-description {
@@ -37,8 +41,7 @@ body {
 }
 .Skip--button {
   position: relative;
-  left: 87px;
-  bottom: 32px;
+  top: 30px;
   background-color: #ff5b3f;
   text-transform: uppercase;
   display: inline-block;
@@ -53,6 +56,10 @@ body {
   color: white;
   border: 0;
   margin: 0;
+}
+
+.Skip--button:focus {
+  outline: none;
 }
 
 a {
@@ -116,6 +123,8 @@ pre {
 
 .Section-example-code {
   font-size: 1em;
+  justify-content: center;
+  display: flex;
 }
 
 .Section-example-code b {
@@ -224,13 +233,8 @@ pre {
 }
 
 /**
- * Rating.
+ * Star.
  */
-
-.Rating {
-  display: flex;
-  justify-content: center;
-}
 
 .Star {
   cursor: pointer;
