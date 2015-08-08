@@ -3,7 +3,13 @@
  * Dependencies.
  */
 
+var sigmoidPrime = require('sigmoid-prime');
+var Emitter = require('emitter-component');
+var htanPrime = require('htan-prime');
 var Matrix = require('node-matrix');
+var sigmoid = require('sigmoid');
+var sample = require('samples');
+var htan = require('htan');
 
 /**
  * References.
@@ -26,221 +32,236 @@ module.exports = Mind;
  *
  * @param {Object} opts
  * @return {Object} this
+ * @api public
  */
 
 function Mind(opts) {
   if (!(this instanceof Mind)) return new Mind(opts);
   opts = opts || {};
 
-  // parameters
+  opts.activator === 'sigmoid'
+    ? (this.activate = sigmoid, this.activatePrime = sigmoidPrime)
+    : (this.activate = htan, this.activatePrime = htanPrime);
+
+  // hyperparameters
   this.learningRate = opts.learningRate || 0.7;
-  this.hiddenNeurons = opts.hiddenNeurons || 3;
-  this.activate = opts.activator === 'tanh' ? tanh : sigmoid;
-  this.activatePrime = opts.activator === 'tanh' ? tanhPrime : sigmoidPrime;
+  this.iterations = opts.iterations || 10000;
+  this.hiddenLayers = opts.hiddenLayers || 1;
+  this.hiddenUnits = opts.hiddenUnits || 3;
 }
 
 /**
- * Use a transformation function.
- *
- * @param {Function} fn
- * @return {Object} this
+ * Mixin.
  */
 
-Mind.prototype.use = function(fn) {
-  this.transform = fn;
-  return this;
-};
+Emitter(Mind.prototype);
 
 /**
- * Learn from examples.
+ * Learn.
  *
- * Analyze the training examples to learn the relationship between the inputs
- * and their corresponding outputs.
+ * 	1. Normalize examples
+ * 	2. Setup weights
+ * 	3. Forward propagate to generate a prediction
+ *  4. Back propagate to adjust weights
+ *  5. Repeat (3) and (4) `this.iterations` times
+ *
+ *  These five steps enable our network to learn the relationship
+ *  between inputs and outputs.
  *
  * @param {Array} examples
  * @return {Object} this
+ * @api public
  */
 
 Mind.prototype.learn = function(examples) {
-  var transform = this.transform;
+  examples = normalize(examples);
 
-  // create the input/output matrices
-  var input = [];
-  var output = [];
-  examples.forEach(function(example) {
-    var currentInput = example.input;
-    var currentOutput = example.output;
+  this.setup(examples);
 
-    if (transform) {
-      currentInput = currentInput.map(transform.before);
-      currentOutput = currentOutput.map(transform.before);
-    }
+  for (var i = 0; i < this.iterations; i++) {
+    var results = this.forward(examples);
+    var errors = this.back(examples, results);
 
-    input.push(currentInput);
-    output.push(currentOutput);
-  });
-
-  var inputMatrix = Matrix(input);
-  var outputMatrix = Matrix(output);
-
-  // setup the neurons
-  var outputNeurons = examples[0].output.length;
-  var inputNeurons = examples[0].input.length;
-  var hiddenNeurons = this.hiddenNeurons;
-
-  // setup the weights
-  this.inputHiddenWeights = Matrix({ rows: inputNeurons, columns: hiddenNeurons, values: sample });
-  this.hiddenOutputWeights = Matrix({ rows: hiddenNeurons, columns: outputNeurons, values: sample });
-
-  // number of iterations
-  for (var i = 0; i < 10000; i++) {
-    // forward propagate
-    this.forward(inputMatrix);
-
-    // back propagate
-    this.back(outputMatrix);
+    this.emit('data', i, errors, results);
   }
 
   return this;
 };
 
 /**
- * Feedforward input through network.
+ * Setup the weights.
  *
- * @param {Object} inputMatrix
- * @return {Object} this
+ * @param {Object} examples
+ * @api private
  */
 
-Mind.prototype.forward = function(inputMatrix) {
-  this.inputMatrix = inputMatrix;
-  var activate = this.activate;
+Mind.prototype.setup = function(examples) {
+  this.weights = [];
 
-  // compute hidden layer sum
-  this.hiddenSum = multiply(this.inputHiddenWeights, inputMatrix);
+  // input > hidden
+  this.weights.push(
+    Matrix({
+      rows: examples.input[0].length,
+      columns: this.hiddenUnits,
+      values: sample
+    })
+  );
 
-  // apply activation function to hidden layer sum
-  this.hiddenResult = this.hiddenSum.transform(activate);
+  // hidden > hidden
+  for (var i = 1; i < this.hiddenLayers; i++) {
+    this.weights.push(
+      Matrix({
+        rows: this.hiddenUnits,
+        columns: this.hiddenUnits,
+        values: sample
+      })
+    );
+  }
 
-  // compute output layer sum
-  this.outputSum = multiply(this.hiddenOutputWeights, this.hiddenResult);
-
-  // apply activation function to output layer sum
-  this.outputResult = this.outputSum.transform(activate);
-
-  return this;
+  // hidden > output
+  this.weights.push(
+    Matrix({
+      rows: this.hiddenUnits,
+      columns: examples.output[0].length,
+      values: sample
+    })
+  );
 };
 
 /**
- * Make a prediction.
+ * Forward propagate.
+ *
+ * @param {Object} examples
+ * @return {Array} results
+ * @api private
+ */
+
+Mind.prototype.forward = function(examples) {
+  var activate = this.activate;
+  var weights = this.weights;
+  var results = [];
+
+  // sum the weight and input
+  function sum(w, i) {
+    var res = {};
+
+    res.sum = multiply(w, i);
+    res.result = res.sum.transform(activate);
+
+    return res;
+  };
+
+  // input > hidden
+  results.push(
+    sum(weights[0], examples.input)
+  );
+
+  // hidden > hidden
+  for (var i = 1; i < this.hiddenLayers; i++) {
+    results.push(
+      sum(weights[i], results[i - 1].result)
+    );
+  }
+
+  // hidden > output
+  results.push(
+    sum(weights[weights.length - 1], results[results.length - 1].result)
+  );
+
+  return results;
+};
+
+/**
+ * Back propagate.
+ *
+ * @param {Object} outputMatrix
+ * @api private
+ */
+
+Mind.prototype.back = function(examples, results) {
+  var activatePrime = this.activatePrime;
+  var hiddenLayers = this.hiddenLayers;
+  var learningRate = this.learningRate;
+  var weights = this.weights;
+
+  // output > hidden
+  var error = subtract(examples.output, results[results.length - 1].result);
+  var delta = dot(results[results.length - 1].sum.transform(activatePrime), error);
+  var changes = scalar(multiply(delta, results[0].result.transpose()), learningRate);
+  weights[weights.length - 1] = add(weights[weights.length - 1], changes);
+
+  // hidden > hidden
+  for (var i = 1; i < hiddenLayers; i++) {
+    delta = dot(multiply(weights[weights.length - i].transpose(), delta), results[results.length - (i + 1)].sum.transform(activatePrime));
+    changes = scalar(multiply(delta, results[results.length - (i + 1)].result.transpose()), learningRate);
+    weights[weights.length - (i + 1)] = add(weights[weights.length - (i + 1)], changes);
+  }
+
+  // hidden > input
+  delta = dot(multiply(weights[1].transpose(), delta), results[0].sum.transform(activatePrime));
+  changes = scalar(multiply(delta, examples.input.transpose()), learningRate);
+  weights[0] = add(weights[0], changes);
+
+  return error;
+};
+
+/**
+ * Predict.
  *
  * @param {Array} input
+ * @api public
  */
 
 Mind.prototype.predict = function(input) {
-  var transform = this.transform;
+  var results = this.forward({ input: Matrix([input]) });
 
-  // apply `before` transform
-  if (transform) {
-    for (var i = 0; i < input.length; i++) {
-      input[i] = transform.before(input[i]);
-    }
-  }
-
-  // matrix-ify input data
-  var inputMatrix = Matrix([input]);
-
-  // forward propagate
-  this.forward(inputMatrix);
-
-  // prediction reference
-  var prediction = this.outputResult;
-
-  // apply `after` transform
-  if (transform) {
-    for (var j = 0; j < prediction.numRows; j++) {
-      prediction[j] = transform.after(prediction[j]);
-    }
-  }
-
-  return prediction[0];
+  return results[results.length - 1].result[0];
 };
 
 /**
- * Backpropagate errors through the network.
+ * Upload weights.
  *
- * - Determines how to change the network weights in order to minimize the cost function
- *
- * @param {Object} target
+ * @param {Object} weights
+ * @return {Object} this
+ * @api public
  */
 
-Mind.prototype.back = function(targetMatrix) {
-  var activatePrime = this.activatePrime;
+Mind.prototype.upload = function(weights) {
+  this.weights = weights;
 
-  // compute output layer changes
-  var errorOutputLayer = subtract(targetMatrix, this.outputResult); // what did you predict, NN? what should it be? what's the differnce?
-  var deltaOutputLayer = dot(this.outputSum.transform(activatePrime), errorOutputLayer);  //
-  var hiddenOutputWeightsChanges = scalar(multiply(deltaOutputLayer, this.hiddenResult.transpose()), this.learningRate);
-
-  // compute hidden layer changes
-  var multiplied = multiply(this.hiddenOutputWeights.transpose(), deltaOutputLayer);
-  var deltaHiddenLayer = dot(multiplied, this.hiddenSum.transform(activatePrime));
-  var inputHiddenWeightsChanges = scalar(multiply(deltaHiddenLayer, this.inputMatrix.transpose()), this.learningRate);
-
-  // compute the new weights
-  this.inputHiddenWeights = add(this.inputHiddenWeights, inputHiddenWeightsChanges);
-  this.hiddenOutputWeights = add(this.hiddenOutputWeights, hiddenOutputWeightsChanges);
+  return this;
 };
 
 /**
- * Generate a random sample from the Guassian distribution.
+ * Download weights.
  *
- * - Uses the Box–Muller transform.
+ * @return {Object} weights
+ * @api public
  */
 
-function sample() {
-  return Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random());
-}
+Mind.prototype.download = function() {
+  return this.weights;
+};
 
 /**
- * Sigmoid function.
+ * Normalize the data.
  *
- * - Non-linear, continuous, and differentiable logistic function.
- * - Useful for inputs between 0 and 1
- * - Serves as the activation function
- *
- * @param {Number} z
+ * @param {Array} data
+ * @return {Object} ret
  */
 
-function sigmoid(z) {
-  return 1 / (1 + Math.exp(-z));
-}
+function normalize(data) {
+  var ret = { input: [], output: [] };
 
-/**
- * Derivative of the sigmoid function.
- *
- * - Used to calculate the deltas.
- *
- * @param {Number} z
- */
+  for (var i = 0; i < data.length; i++) {
+    var datum = data[i];
 
-function sigmoidPrime(z) {
-  return Math.exp(-z) / Math.pow(1 + Math.exp(-z), 2);
-}
+    ret.output.push(datum.output);
+    ret.input.push(datum.input);
+  }
 
-/**
- * Hyperbolic tangent function.
- *
- * - Useful for inputs between -1 and 1
- */
+  ret.output = Matrix(ret.output);
+  ret.input = Matrix(ret.input);
 
-function tanh(z) {
-  return (Math.exp(2 * z) - 1) / (Math.exp(2 * z) + 1);
-}
-
-/**
- * Derivative of the hyperbolic tangent function.
- */
-
-function tanhPrime(z) {
-  return 1 - Math.pow((Math.exp(2 * z) - 1) / (Math.exp(2 * z) + 1), 2);
+  return ret;
 }

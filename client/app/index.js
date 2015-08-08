@@ -44,11 +44,11 @@ function render({ props, state }, updateState) {
       <h1 class='App-title'>Demo</h1>
       <p class='App-description'>Choose a rating. Mind is using each movie's metadata to figure out the kinds of movies you like. After 10 ratings, you'll start to see predictions :)</p>
       <Poster url={ `/images/${imageName}.jpg` }/>
+      <button class='Skip--button' onClick={ skip }>Skip</button>
       <div class='App-rating'>
         <Rating defaultValue={ 0 } onRate={ rate }/>
-        <button class='Skip--button' onClick={ skip }>Skip</button>
       </div>
-      { numRated > 10 ? <div><h1 class='Prediction--header'>Predicted Rating: </h1><Rating defaultValue={ Math.round(rating) } onRate={ rate } disableHover={true}/></div> : null }
+      { numRated > 10 ? <div class='App-rating'><h1 class='Prediction--header'>Predicted Rating: </h1><Rating defaultValue={ Math.round(rating) } onRate={ rate } disableHover={true}/></div> : null }
     </div>
   );
 

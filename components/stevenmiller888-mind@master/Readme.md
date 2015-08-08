@@ -1,6 +1,6 @@
 ![Mind Logo](https://cldup.com/D1yUfBz7Iu.png)
 
-A flexible neural network library for Node.js and the browser.
+A flexible neural network library for Node.js and the browser. Check out a live [demo](http://www.mindjs.net/) of a movie recommendation engine built with Mind.
 
 [![NPM version][npm-image]][npm-url]
 [![build status][circle-image]][circle-url]
@@ -8,59 +8,154 @@ A flexible neural network library for Node.js and the browser.
 
 ## Features
 
-- Vectorized - uses a matrix implementation to efficiently process training data
-- Pluggable - apply transforms so you can pass in diverse datasets
+- Vectorized - uses a matrix implementation to process training data
 - Configurable - allows you to customize the network topology
+- Pluggable - download/upload minds that have already learned
 
 ## Installation
 
     $ npm install node-mind
 
+You can use Mind in the browser by requiring it with Duo or Browserify. Or you can simply use the prebuilt root `index.js` file directly, which will expose `Mind` on the `window` object.
+
 ## Usage
 
 ```js
 var Mind = require('node-mind');
-var mind = Mind();
 
-mind.learn([
-  { input: [0, 0], output: [ 0 ] },
-  { input: [0, 1], output: [ 1 ] },
-  { input: [1, 0], output: [ 1 ] },
-  { input: [1, 1], output: [ 0 ] }
-]);
+/**
+ * Letters.
+ *
+ * - Imagine these # and . represent black and white pixels.
+ */
 
-mind.predict([ 1, 0 ]); // ~ 1
+var a = character(
+  '.#####.' +
+  '#.....#' +
+  '#.....#' +
+  '#######' +
+  '#.....#' +
+  '#.....#' +
+  '#.....#'
+);
+
+var b = character(
+  '######.' +
+  '#.....#' +
+  '#.....#' +
+  '######.' +
+  '#.....#' +
+  '#.....#' +
+  '######.'
+);
+
+var c = character(
+  '#######' +
+  '#......' +
+  '#......' +
+  '#......' +
+  '#......' +
+  '#......' +
+  '#######'
+);
+
+/**
+ * Learn the letters A through C.
+ */
+
+var mind = Mind()
+  .learn([
+    { input: a, output: map('a') },
+    { input: b, output: map('b') },
+    { input: c, output: map('c') }
+  ]);
+
+/**
+ * Predict the letter C, even with a pixel off.
+ */
+
+var result = mind.predict(character(
+  '#######' +
+  '#......' +
+  '#......' +
+  '#......' +
+  '#......' +
+  '##.....' +
+  '#######'
+));
+
+console.log(result); // ~ 0.5
+
+/**
+ * Turn the # into 1s and . into 0s.
+ */
+
+function character(string) {
+  return string
+    .trim()
+    .split('')
+    .map(integer);
+
+  function integer(symbol) {
+    if ('#' === symbol) return 1;
+    if ('.' === symbol) return 0;
+  }
+}
+
+/**
+ * Map letter to a number.
+ */
+
+function map(letter) {
+  if (letter === 'a') return [ 0.1 ];
+  if (letter === 'b') return [ 0.3 ];
+  if (letter === 'c') return [ 0.5 ];
+  return 0;
+}
 ```
 
 ## Plugins
 
-Use transformation plugins so you can perform analysis on any dataset. A transform is just an object with a `before` function and an `after` function, which will be applied to each data point before and after analysis. Here's an example currency transform:
+Use plugins created by the Mind community to configure pre-trained networks that can go straight to making predictions.
+
+Here's a cool example of the way you could use a hypothetical `mind-ocr` plugin:
 
 ```js
-var currency = {
-  before: function(value) {
-    return Number(value.slice(1));
-  },
-  after: function(value) {
-    return '$' + value;
-  }
-};
+var Mind = require('node-mind');
+var ocr = require('mind-ocr');
+
+var mind = Mind()
+  .upload(ocr)
+  .predict(
+    '.#####.' +
+    '#.....#' +
+    '#.....#' +
+    '#######' +
+    '#.....#' +
+    '#.....#' +
+    '#.....#'
+  );
 ```
 
-This lets you to pass it in the following training data:
+To create a plugin, simply call `download` on your trained mind:
 
 ```js
-[
-  { input: ["$1500", "$870"], output: [ "$1010" ] },
-  { input: ["$1400", "$700"], output: [ "$1140" ] },
-  { input: ["$2000", "$1100"], output: [ "$1432" ] },
-  { input: ["$1800", "$1000"], output: [ "$910" ] }
-]
+var Mind = require('node-mind');
+
+var mind = Mind()
+  .learn([
+    { input: [0, 0], output: [ 0 ] },
+    { input: [0, 1], output: [ 1 ] },
+    { input: [1, 0], output: [ 1 ] },
+    { input: [1, 1], output: [ 0 ] }
+  ]);
+
+var xor = mind.download();
 ```
 
 Here's a list of available plugins:
 
-- [currency](https://github.com/stevenmiller888/mind-currency)
+- [xor](https://github.com/stevenmiller888/mind-xor)
 
 ## API
 
@@ -68,30 +163,66 @@ Here's a list of available plugins:
 Create a new instance of Mind that can learn to make predictions.
 
 The available options are:
-* `learningRate`: how quickly the network should learn.
-* `hiddenNeurons`: how many neurons are in the hidden layer.
-* `activator`: which activation function to use, `sigmoid` or `tanh`.
+* `activator`: the activation function to use, `sigmoid` or `htan`
+* `learningRate`: the speed at which the network will learn
+* `hiddenUnits`: the number of units in the hidden layer/s
+* `iterations`: the number of iterations to run
+* `hiddenLayers`: the number of hidden layers
 
 #### .learn()
 
-Learn from training data, which should look something like the following:
+Learn from training data:
 
 ```js
-[
+mind.learn([
   { input: [0, 0], output: [ 0 ] },
   { input: [0, 1], output: [ 1 ] },
   { input: [1, 0], output: [ 1 ] },
   { input: [1, 1], output: [ 0 ] }
-]
+]);
 ```
 
 #### .predict()
 
-Make a new prediction after training is finished. You can pass an array:
+Make a prediction:
 
+```js
+mind.predict([0, 1]);
 ```
-[0, 0]
+
+#### .download()
+
+Download a mind:
+
+```js
+var xor = mind.download();
 ```
+
+#### .upload()
+
+Upload a mind:
+
+```js
+mind.upload(xor);
+```
+
+#### .on()
+
+Listen for the 'data' event, which is fired with each iteration:
+
+```js
+mind.on('data', function(iteration, errors, results) {
+  // ...
+});
+```
+
+## Note
+
+If you're interested in learning more about neural networks, you'll definitely want to check out these fantastic libraries:
+
+- [convnetjs](https://github.com/karpathy/convnetjs)
+- [synaptic](https://github.com/cazala/synaptic)
+- [brain](https://github.com/harthur/brain)
 
 ## License
 

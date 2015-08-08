@@ -34,17 +34,19 @@ body {
 }
 
 .Prediction--header {
-  margin-top: 12px;
   position: relative;
   top: 35px;
+  right: 203px;
   font-size: 1.3em;
 }
 .Skip--button {
   position: relative;
-  top: 30px;
+  top: 40px;
+  left: 88px;
   background-color: #ff5b3f;
   text-transform: uppercase;
   display: inline-block;
+  -webkit-transition: all 200ms;
   transition: all 200ms;
   text-decoration: none;
   overflow: 'hidden';
@@ -248,4 +250,3 @@ pre {
   color: rgb(255, 204, 0);
   text-shadow: rgb(220, 176, 0) 0px 1px 0px;
 }
-
