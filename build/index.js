@@ -3943,7 +3943,7 @@ function render(_ref, updateState) {
       { 'class': 'App-description' },
       'Choose a rating. Mind is using each movie\'s metadata to figure out the kinds of movies you like. After 10 ratings, you\'ll start to see predictions :)'
     ),
-    (0, _dekujsDeku.dom)(_poster2['default'], { url: '/images/' + imageName + '.jpg' }),
+    (0, _dekujsDeku.dom)(_poster2['default'], { url: 'images/' + imageName + '.jpg' }),
     (0, _dekujsDeku.dom)(
       'button',
       { 'class': 'Skip--button', onClick: skip },
