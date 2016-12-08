@@ -218,11 +218,15 @@ mind.on('data', function(iteration, errors, results) {
 
 ## Note
 
-If you're interested in learning more about neural networks, you'll definitely want to check out these fantastic libraries:
+If you're interested in learning more, I wrote a blog post on how to build your own neural network:
+
+- [How to Build a Neural Network](http://stevenmiller888.github.io/mind-how-to-build-a-neural-network/)
+
+Also, here are some fantastic libraries you can check out:
 
 - [convnetjs](https://github.com/karpathy/convnetjs)
 - [synaptic](https://github.com/cazala/synaptic)
-- [brain](https://github.com/harthur/brain)
+- [brain](https://github.com/harthur-org/brain.js)
 
 ## License
 

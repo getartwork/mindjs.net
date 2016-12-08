@@ -151,7 +151,7 @@ app.use((0, _clientActions2['default'])());
        * Module dependencies.
        */
 
-      var Emitter = _require("component-emitter");
+      var Emitter = _require('component-emitter');
 
       /**
        * Expose `scene`.
@@ -206,7 +206,7 @@ app.use((0, _clientActions2['default'])());
 
       Application.prototype.set = function (name, data) {
         this.sources[name] = data;
-        this.emit("source", name, data);
+        this.emit('source', name, data);
         return this;
       };
 
@@ -218,7 +218,7 @@ app.use((0, _clientActions2['default'])());
 
       Application.prototype.mount = function (element) {
         this.element = element;
-        this.emit("mount", element);
+        this.emit('mount', element);
         return this;
       };
 
@@ -229,7 +229,7 @@ app.use((0, _clientActions2['default'])());
       Application.prototype.unmount = function () {
         if (!this.element) return;
         this.element = null;
-        this.emit("unmount");
+        this.emit('unmount');
         return this;
       };
     }, { "component-emitter": 9 }], 2: [function (_require, module, exports) {
@@ -237,92 +237,92 @@ app.use((0, _clientActions2['default'])());
        * Create the application.
        */
 
-      exports.tree = exports.scene = exports.deku = _require("./application");
+      exports.tree = exports.scene = exports.deku = _require('./application');
 
       /**
        * Render scenes to the DOM.
        */
 
-      if (typeof document !== "undefined") {
-        exports.render = _require("./render");
+      if (typeof document !== 'undefined') {
+        exports.render = _require('./render');
       }
 
       /**
        * Render scenes to a string
        */
 
-      exports.renderString = _require("./stringify");
+      exports.renderString = _require('./stringify');
 
       /**
        * Create virtual elements.
        */
 
-      exports.element = exports.dom = _require("./virtual");
+      exports.element = exports.dom = _require('./virtual');
     }, { "./application": 1, "./render": 3, "./stringify": 4, "./virtual": 7 }], 3: [function (_require, module, exports) {
       /**
        * Dependencies.
        */
 
-      var raf = _require("component-raf");
-      var Pool = _require("dom-pool");
-      var walk = _require("dom-walk");
-      var isDom = _require("is-dom");
-      var uid = _require("get-uid");
-      var throttle = _require("per-frame");
-      var keypath = _require("object-path");
-      var type = _require("component-type");
-      var utils = _require("./utils");
-      var svg = _require("./svg");
+      var raf = _require('component-raf');
+      var Pool = _require('dom-pool');
+      var walk = _require('dom-walk');
+      var isDom = _require('is-dom');
+      var uid = _require('get-uid');
+      var throttle = _require('per-frame');
+      var keypath = _require('object-path');
+      var type = _require('component-type');
+      var utils = _require('./utils');
+      var svg = _require('./svg');
       var defaults = utils.defaults;
-      var forEach = _require("fast.js/forEach");
-      var assign = _require("fast.js/object/assign");
-      var reduce = _require("fast.js/reduce");
+      var forEach = _require('fast.js/forEach');
+      var assign = _require('fast.js/object/assign');
+      var reduce = _require('fast.js/reduce');
 
       /**
        * All of the events can bind to
        */
 
       var events = {
-        onBlur: "blur",
-        onChange: "change",
-        onClick: "click",
-        onContextMenu: "contextmenu",
-        onCopy: "copy",
-        onCut: "cut",
-        onDoubleClick: "dblclick",
-        onDrag: "drag",
-        onDragEnd: "dragend",
-        onDragEnter: "dragenter",
-        onDragExit: "dragexit",
-        onDragLeave: "dragleave",
-        onDragOver: "dragover",
-        onDragStart: "dragstart",
-        onDrop: "drop",
-        onFocus: "focus",
-        onInput: "input",
-        onKeyDown: "keydown",
-        onKeyUp: "keyup",
-        onMouseDown: "mousedown",
-        onMouseEnter: "mouseenter",
-        onMouseLeave: "mouseleave",
-        onMouseMove: "mousemove",
-        onMouseOut: "mouseout",
-        onMouseOver: "mouseover",
-        onMouseUp: "mouseup",
-        onPaste: "paste",
-        onScroll: "scroll",
-        onSubmit: "submit",
-        onTouchCancel: "touchcancel",
-        onTouchEnd: "touchend",
-        onTouchMove: "touchmove",
-        onTouchStart: "touchstart"
+        onBlur: 'blur',
+        onChange: 'change',
+        onClick: 'click',
+        onContextMenu: 'contextmenu',
+        onCopy: 'copy',
+        onCut: 'cut',
+        onDoubleClick: 'dblclick',
+        onDrag: 'drag',
+        onDragEnd: 'dragend',
+        onDragEnter: 'dragenter',
+        onDragExit: 'dragexit',
+        onDragLeave: 'dragleave',
+        onDragOver: 'dragover',
+        onDragStart: 'dragstart',
+        onDrop: 'drop',
+        onFocus: 'focus',
+        onInput: 'input',
+        onKeyDown: 'keydown',
+        onKeyUp: 'keyup',
+        onMouseDown: 'mousedown',
+        onMouseEnter: 'mouseenter',
+        onMouseLeave: 'mouseleave',
+        onMouseMove: 'mousemove',
+        onMouseOut: 'mouseout',
+        onMouseOver: 'mouseover',
+        onMouseUp: 'mouseup',
+        onPaste: 'paste',
+        onScroll: 'scroll',
+        onSubmit: 'submit',
+        onTouchCancel: 'touchcancel',
+        onTouchEnd: 'touchend',
+        onTouchMove: 'touchmove',
+        onTouchStart: 'touchstart'
       };
 
       /**
        * These elements won't be pooled
        */
 
-      var avoidPooling = ["input", "textarea"];
+      var avoidPooling = ['input', 'textarea'];
 
       /**
        * Expose `dom`.
@@ -343,7 +343,7 @@ app.use((0, _clientActions2['default'])());
       function render(app, container, opts) {
         var frameId;
         var isRendering;
-        var rootId = "root";
+        var rootId = 'root';
         var currentElement;
         var currentNativeElement;
         var connections = {};
@@ -355,7 +355,7 @@ app.use((0, _clientActions2['default'])());
         children[rootId] = {};
 
         if (!isDom(container)) {
-          throw new Error("Container element must be a DOM element");
+          throw new Error('Container element must be a DOM element');
         }
 
         /**
@@ -381,9 +381,9 @@ app.use((0, _clientActions2['default'])());
          * the DOM as needed.
          */
 
-        app.on("unmount", onunmount);
-        app.on("mount", onmount);
-        app.on("source", onupdate);
+        app.on('unmount', onunmount);
+        app.on('mount', onmount);
+        app.on('source', onupdate);
 
         /**
          * If the app has already mounted an element, we can just
@@ -400,9 +400,9 @@ app.use((0, _clientActions2['default'])());
         function teardown() {
           removeNativeEventListeners();
           removeNativeElement();
-          app.off("unmount", onunmount);
-          app.off("mount", onmount);
-          app.off("source", onupdate);
+          app.off('unmount', onunmount);
+          app.off('mount', onmount);
+          app.off('source', onupdate);
         }
 
         /**
@@ -457,20 +457,20 @@ app.use((0, _clientActions2['default'])());
           commit(entity);
 
           // callback before mounting.
-          trigger("beforeMount", entity, [entity.context]);
-          trigger("beforeRender", entity, [entity.context]);
+          trigger('beforeMount', entity, [entity.context]);
+          trigger('beforeRender', entity, [entity.context]);
 
           // render virtual element.
           var virtualElement = renderEntity(entity);
           // create native element.
-          var nativeElement = toNative(entity.id, "0", virtualElement);
+          var nativeElement = toNative(entity.id, '0', virtualElement);
 
           entity.virtualElement = virtualElement;
           entity.nativeElement = nativeElement;
 
           // callback after mounting.
-          trigger("afterRender", entity, [entity.context, nativeElement]);
-          trigger("afterMount", entity, [entity.context, nativeElement, setState(entity)]);
+          trigger('afterRender', entity, [entity.context, nativeElement]);
+          trigger('afterMount', entity, [entity.context, nativeElement, setState(entity)]);
 
           return nativeElement;
         }
@@ -484,7 +484,7 @@ app.use((0, _clientActions2['default'])());
         function unmountEntity(entityId) {
           var entity = entities[entityId];
           if (!entity) return;
-          trigger("beforeUnmount", entity, [entity.context, entity.nativeElement]);
+          trigger('beforeUnmount', entity, [entity.context, entity.nativeElement]);
           unmountChildren(entityId);
           removeAllEvents(entityId);
           var componentEntities = components[entityId].entities;
@@ -504,9 +504,9 @@ app.use((0, _clientActions2['default'])());
 
         function renderEntity(entity) {
           var component = entity.component;
-          if (!component.render) throw new Error("Component needs a render function");
+          if (!component.render) throw new Error('Component needs a render function');
           var result = component.render(entity.context, setState(entity));
-          if (!result) throw new Error("Render function must return an element.");
+          if (!result) throw new Error('Render function must return an element.');
           return result;
         }
 
@@ -569,12 +569,12 @@ app.use((0, _clientActions2['default'])());
           // 3. We should update check all child components for changes.
           if (!currentNativeElement) {
             currentElement = app.element;
-            currentNativeElement = toNative(rootId, "0", currentElement);
+            currentNativeElement = toNative(rootId, '0', currentElement);
             if (container.children.length > 0) {
-              console.info("deku: The container element is not empty. These elements will be removed. Read more: http://cl.ly/b0Sr");
+              console.info('deku: The container element is not empty. These elements will be removed. Read more: http://cl.ly/b0Sr');
             }
             if (container === document.body) {
-              console.warn("deku: Using document.body is allowed but it can cause some issues. Read more: http://cl.ly/b0SC");
+              console.warn('deku: Using document.body is allowed but it can cause some issues. Read more: http://cl.ly/b0SC');
             }
             removeAllChildren(container);
             container.appendChild(currentNativeElement);
@@ -621,8 +621,8 @@ app.use((0, _clientActions2['default'])());
           var previousProps = entity.context.props;
 
           // hook before rendering. could modify state just before the render occurs.
-          trigger("beforeUpdate", entity, [entity.context, nextProps, nextState]);
-          trigger("beforeRender", entity, [entity.context]);
+          trigger('beforeUpdate', entity, [entity.context, nextProps, nextState]);
+          trigger('beforeRender', entity, [entity.context]);
 
           // commit state and props.
           commit(entity);
@@ -641,10 +641,10 @@ app.use((0, _clientActions2['default'])());
           updateChildren(entityId);
 
           // trigger render hook
-          trigger("afterRender", entity, [entity.context, entity.nativeElement]);
+          trigger('afterRender', entity, [entity.context, entity.nativeElement]);
 
           // trigger afterUpdate after all children have updated.
-          trigger("afterUpdate", entity, [entity.context, previousProps, previousState, setState(entity)]);
+          trigger('afterUpdate', entity, [entity.context, previousProps, previousState, setState(entity)]);
         }
 
         /**
@@ -678,7 +678,7 @@ app.use((0, _clientActions2['default'])());
 
         function removeNativeElement() {
           clearFrame();
-          removeElement(rootId, "0", currentNativeElement);
+          removeElement(rootId, '0', currentNativeElement);
           currentNativeElement = null;
         }
 
@@ -694,11 +694,11 @@ app.use((0, _clientActions2['default'])());
 
         function toNative(entityId, path, vnode) {
           switch (vnode.type) {
-            case "text":
+            case 'text':
               return toNativeText(vnode);
-            case "element":
+            case 'element':
               return toNativeElement(entityId, path, vnode);
-            case "component":
+            case 'component':
               return toNativeComponent(entityId, path, vnode);
           }
         }
@@ -747,7 +747,7 @@ app.use((0, _clientActions2['default'])());
 
           // add children.
           forEach(children, function (child, i) {
-            var childEl = toNative(entityId, path + "." + i, child);
+            var childEl = toNative(entityId, path + '.' + i, child);
             if (!childEl.parentNode) el.appendChild(childEl);
           });
 
@@ -769,7 +769,7 @@ app.use((0, _clientActions2['default'])());
          */
 
         function patch(entityId, prev, next, el) {
-          return diffNode("0", entityId, prev, next, el);
+          return diffNode('0', entityId, prev, next, el);
         }
 
         /**
@@ -783,11 +783,11 @@ app.use((0, _clientActions2['default'])());
           if (prev.type !== next.type) return replaceElement(entityId, path, el, next);
 
           switch (next.type) {
-            case "text":
+            case 'text':
               return diffText(prev, next, el);
-            case "element":
+            case 'element':
               return diffElement(path, entityId, prev, next, el);
-            case "component":
+            case 'component':
               return diffComponent(path, entityId, prev, next, el);
           }
         }
@@ -828,7 +828,7 @@ app.use((0, _clientActions2['default'])());
             // Removals
             forEach(leftKeys, function (leftNode, key) {
               if (rightKeys[key] == null) {
-                var leftPath = path + "." + leftNode.index;
+                var leftPath = path + '.' + leftNode.index;
                 removeElement(entityId, leftPath, childNodes[leftNode.index]);
               }
             });
@@ -840,7 +840,7 @@ app.use((0, _clientActions2['default'])());
               // We only want updates for now
               if (leftNode == null) return;
 
-              var leftPath = path + "." + leftNode.index;
+              var leftPath = path + '.' + leftNode.index;
 
               // Updated
               positions[rightNode.index] = diffNode(leftPath, entityId, leftNode, rightNode, childNodes[leftNode.index]);
@@ -853,8 +853,8 @@ app.use((0, _clientActions2['default'])());
               // We just want elements that have moved around
               if (leftNode == null || leftNode.index === rightNode.index) return;
 
-              var rightPath = path + "." + rightNode.index;
-              var leftPath = path + "." + leftNode.index;
+              var rightPath = path + '.' + rightNode.index;
+              var leftPath = path + '.' + leftNode.index;
 
               // Update all the child component path positions to match
               // the latest positions if they've changed. This is a bit hacky.
@@ -869,7 +869,7 @@ app.use((0, _clientActions2['default'])());
             // Now add all of the new nodes last in case their path
             // would have conflicted with one of the previous paths.
             forEach(rightKeys, function (rightNode, key) {
-              var rightPath = path + "." + rightNode.index;
+              var rightPath = path + '.' + rightNode.index;
               if (leftKeys[key] == null) {
                 positions[rightNode.index] = toNative(entityId, rightPath, rightNode);
               }
@@ -884,17 +884,17 @@ app.use((0, _clientActions2['default'])());
 
               // Removals
               if (rightNode == null) {
-                removeElement(entityId, path + "." + leftNode.index, childNodes[leftNode.index]);
+                removeElement(entityId, path + '.' + leftNode.index, childNodes[leftNode.index]);
               }
 
               // New Node
               if (leftNode == null) {
-                positions[rightNode.index] = toNative(entityId, path + "." + rightNode.index, rightNode);
+                positions[rightNode.index] = toNative(entityId, path + '.' + rightNode.index, rightNode);
               }
 
               // Updated
               if (leftNode && rightNode) {
-                positions[leftNode.index] = diffNode(path + "." + leftNode.index, entityId, leftNode, rightNode, childNodes[leftNode.index]);
+                positions[leftNode.index] = diffNode(path + '.' + leftNode.index, entityId, leftNode, rightNode, childNodes[leftNode.index]);
               }
             }
           }
@@ -1090,13 +1090,13 @@ app.use((0, _clientActions2['default'])());
             return;
           }
           switch (name) {
-            case "checked":
-            case "disabled":
-            case "selected":
+            case 'checked':
+            case 'disabled':
+            case 'selected':
               el[name] = true;
               break;
-            case "innerHTML":
-            case "value":
+            case 'innerHTML':
+            case 'value':
               el[name] = value;
               break;
             case svg.isAttribute(name):
@@ -1122,13 +1122,13 @@ app.use((0, _clientActions2['default'])());
             return;
           }
           switch (name) {
-            case "checked":
-            case "disabled":
-            case "selected":
+            case 'checked':
+            case 'disabled':
+            case 'selected':
               el[name] = false;
               break;
-            case "innerHTML":
-            case "value":
+            case 'innerHTML':
+            case 'value':
               el[name] = "";
               break;
             default:
@@ -1151,7 +1151,7 @@ app.use((0, _clientActions2['default'])());
          */
 
         function isWithinPath(target, path) {
-          return path.indexOf(target + ".") === 0;
+          return path.indexOf(target + '.') === 0;
         }
 
         /**
@@ -1228,7 +1228,7 @@ app.use((0, _clientActions2['default'])());
          */
 
         function trigger(name, entity, args) {
-          if (typeof entity.component[name] !== "function") return;
+          if (typeof entity.component[name] !== 'function') return;
           entity.component[name].apply(null, args);
         }
 
@@ -1357,8 +1357,7 @@ app.use((0, _clientActions2['default'])());
           sources.forEach(function (source) {
             var name = map[source];
             if (entity.pendingProps[name] != null) return;
-            entity.pendingProps[name] = app.sources[source] // get latest value plugged into global store
-            ;
+            entity.pendingProps[name] = app.sources[source]; // get latest value plugged into global store
           });
         }
 
@@ -1464,27 +1463,27 @@ app.use((0, _clientActions2['default'])());
 
           // TODO: Only validate in dev mode
           forEach(rules, function (options, name) {
-            if (name === "children") return;
+            if (name === 'children') return;
             var value = props[name];
             var optional = options.optional === true;
             if (optional && value == null) {
               return;
             }
             if (!optional && value == null) {
-              throw new Error("Missing prop named: " + name);
+              throw new Error('Missing prop named: ' + name);
             }
             if (options.type && type(value) !== options.type) {
-              throw new Error("Invalid type for prop named: " + name);
+              throw new Error('Invalid type for prop named: ' + name);
             }
             if (options.expects && options.expects.indexOf(value) < 0) {
-              throw new Error("Invalid value for prop named: " + name + ". Must be one of " + options.expects.toString());
+              throw new Error('Invalid value for prop named: ' + name + '. Must be one of ' + options.expects.toString());
             }
           });
 
           // Now check for props that haven't been defined
           forEach(props, function (value, key) {
-            if (key === "children") return;
-            if (!rules[key]) throw new Error("Unexpected prop named: " + key);
+            if (key === 'children') return;
+            if (!rules[key]) throw new Error('Unexpected prop named: ' + key);
           });
         }
 
@@ -1543,7 +1542,7 @@ app.use((0, _clientActions2['default'])());
         this.dirty = false;
         this.virtualElement = null;
         this.nativeElement = null;
-        this.displayName = component.name || "Component";
+        this.displayName = component.name || 'Component';
       }
 
       /**
@@ -1562,7 +1561,7 @@ app.use((0, _clientActions2['default'])());
        */
 
       function getNodeAtPath(el, path) {
-        var parts = path.split(".");
+        var parts = path.split('.');
         parts.shift();
         while (parts.length) {
           el = el.childNodes[parts.pop()];
@@ -1570,7 +1569,7 @@ app.use((0, _clientActions2['default'])());
         return el;
       }
     }, { "./svg": 5, "./utils": 6, "component-raf": 10, "component-type": 11, "dom-pool": 12, "dom-walk": 13, "fast.js/forEach": 17, "fast.js/object/assign": 20, "fast.js/reduce": 23, "get-uid": 24, "is-dom": 25, "object-path": 26, "per-frame": 27 }], 4: [function (_require, module, exports) {
-      var utils = _require("./utils");
+      var utils = _require('./utils');
       var defaults = utils.defaults;
 
       /**
@@ -1579,7 +1578,7 @@ app.use((0, _clientActions2['default'])());
 
       module.exports = function (app) {
         if (!app.element) {
-          throw new Error("No element mounted");
+          throw new Error('No element mounted');
         }
 
         /**
@@ -1605,7 +1604,7 @@ app.use((0, _clientActions2['default'])());
           if (component.beforeMount) component.beforeMount({ props: props, state: state });
           if (component.beforeRender) component.beforeRender({ props: props, state: state });
           var node = component.render({ props: props, state: state });
-          return stringifyNode(node, "0");
+          return stringifyNode(node, '0');
         }
 
         /**
@@ -1619,33 +1618,33 @@ app.use((0, _clientActions2['default'])());
 
         function stringifyNode(node, path) {
           switch (node.type) {
-            case "text":
+            case 'text':
               return node.data;
-            case "element":
+            case 'element':
               var children = node.children;
               var attributes = node.attributes;
               var tagName = node.tagName;
               var innerHTML = attributes.innerHTML;
-              var str = "<" + tagName + attrs(attributes) + ">";
+              var str = '<' + tagName + attrs(attributes) + '>';
 
               if (innerHTML) {
                 str += innerHTML;
               } else {
                 for (var i = 0, n = children.length; i < n; i++) {
-                  str += stringifyNode(children[i], path + "." + i);
+                  str += stringifyNode(children[i], path + '.' + i);
                 }
               }
 
-              str += "</" + tagName + ">";
+              str += '</' + tagName + '>';
               return str;
-            case "component":
+            case 'component':
               return stringify(node.component, node.props);
           }
 
-          throw new Error("Invalid type");
+          throw new Error('Invalid type');
         }
 
-        return stringifyNode(app.element, "0");
+        return stringifyNode(app.element, '0');
       };
 
       /**
@@ -1657,9 +1656,9 @@ app.use((0, _clientActions2['default'])());
        */
 
       function attrs(attributes) {
-        var str = "";
+        var str = '';
         for (var key in attributes) {
-          if (key === "innerHTML") continue;
+          if (key === 'innerHTML') continue;
           str += attr(key, attributes[key]);
         }
         return str;
@@ -1675,10 +1674,10 @@ app.use((0, _clientActions2['default'])());
        */
 
       function attr(key, val) {
-        return " " + key + "=\"" + val + "\"";
+        return ' ' + key + '="' + val + '"';
       }
     }, { "./utils": 6 }], 5: [function (_require, module, exports) {
-      var indexOf = _require("fast.js/array/indexOf");
+      var indexOf = _require('fast.js/array/indexOf');
 
       /**
        * This file lists the supported SVG elements used by the
@@ -1686,7 +1685,7 @@ app.use((0, _clientActions2['default'])());
        * that doesn't require whitelisting elements.
        */
 
-      exports.namespace = "http://www.w3.org/2000/svg";
+      exports.namespace = 'http://www.w3.org/2000/svg';
 
       /**
        * Supported SVG elements
@@ -1694,13 +1693,13 @@ app.use((0, _clientActions2['default'])());
        * @type {Array}
        */
 
-      exports.elements = ["circle", "defs", "ellipse", "g", "line", "linearGradient", "mask", "path", "pattern", "polygon", "polyline", "radialGradient", "rect", "stop", "svg", "text", "tspan"];
+      exports.elements = ['circle', 'defs', 'ellipse', 'g', 'line', 'linearGradient', 'mask', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'stop', 'svg', 'text', 'tspan'];
 
       /**
        * Supported SVG attributes
        */
 
-      exports.attributes = ["cx", "cy", "d", "dx", "dy", "fill", "fillOpacity", "fontFamily", "fontSize", "fx", "fy", "gradientTransform", "gradientUnits", "markerEnd", "markerMid", "markerStart", "offset", "opacity", "patternContentUnits", "patternUnits", "points", "preserveAspectRatio", "r", "rx", "ry", "spreadMethod", "stopColor", "stopOpacity", "stroke", "strokeDasharray", "strokeLinecap", "strokeOpacity", "strokeWidth", "textAnchor", "transform", "version", "viewBox", "x1", "x2", "x", "y1", "y2", "y"];
+      exports.attributes = ['cx', 'cy', 'd', 'dx', 'dy', 'fill', 'fillOpacity', 'fontFamily', 'fontSize', 'fx', 'fy', 'gradientTransform', 'gradientUnits', 'markerEnd', 'markerMid', 'markerStart', 'offset', 'opacity', 'patternContentUnits', 'patternUnits', 'points', 'preserveAspectRatio', 'r', 'rx', 'ry', 'spreadMethod', 'stopColor', 'stopOpacity', 'stroke', 'strokeDasharray', 'strokeLinecap', 'strokeOpacity', 'strokeWidth', 'textAnchor', 'transform', 'version', 'viewBox', 'x1', 'x2', 'x', 'y1', 'y2', 'y'];
 
       /**
        * Is element's namespace SVG?
@@ -1734,7 +1733,7 @@ app.use((0, _clientActions2['default'])());
 
       exports.defaults = function (options, defaults) {
         Object.keys(defaults).forEach(function (key) {
-          if (typeof options[key] === "undefined") {
+          if (typeof options[key] === 'undefined') {
             options[key] = defaults[key];
           }
         });
@@ -1745,9 +1744,9 @@ app.use((0, _clientActions2['default'])());
        * Module dependencies.
        */
 
-      var type = _require("component-type");
-      var slice = _require("sliced");
-      var flatten = _require("array-flatten");
+      var type = _require('component-type');
+      var slice = _require('sliced');
+      var flatten = _require('array-flatten');
 
       /**
        * This function lets us create virtual nodes using a simple
@@ -1781,12 +1780,12 @@ app.use((0, _clientActions2['default'])());
       function virtual(type, props, children) {
         // Default to div with no args
         if (!type) {
-          throw new Error("deku: Element needs a type. Read more: http://cl.ly/b0KZ");
+          throw new Error('deku: Element needs a type. Read more: http://cl.ly/b0KZ');
         }
 
         // Skipped adding attributes and we're passing
         // in children instead.
-        if (arguments.length === 2 && (typeof props === "string" || Array.isArray(props))) {
+        if (arguments.length === 2 && (typeof props === 'string' || Array.isArray(props))) {
           children = props;
           props = {};
         }
@@ -1809,13 +1808,13 @@ app.use((0, _clientActions2['default'])());
         children = flatten(children, 1).reduce(normalize, []);
 
         // pull the key out from the data.
-        var key = "key" in props ? String(props.key) : null;
-        delete props["key"];
+        var key = 'key' in props ? String(props.key) : null;
+        delete props['key'];
 
         // if you pass in a function, it's a `Component` constructor.
         // otherwise it's an element.
         var node;
-        if (typeof type === "string") {
+        if (typeof type === 'string') {
           node = new ElementNode(type, props, key, children);
         } else {
           node = new ComponentNode(type, props, key, children);
@@ -1840,7 +1839,7 @@ app.use((0, _clientActions2['default'])());
         if (node == null) {
           return acc;
         }
-        if (typeof node === "string" || typeof node === "number") {
+        if (typeof node === 'string' || typeof node === 'number') {
           var newNode = new TextNode(String(node));
           newNode.index = acc.length;
           acc.push(newNode);
@@ -1864,7 +1863,7 @@ app.use((0, _clientActions2['default'])());
       function ComponentNode(component, props, key, children) {
         this.key = key;
         this.props = props;
-        this.type = "component";
+        this.type = 'component';
         this.component = component;
         this.props.children = children || [];
       }
@@ -1880,7 +1879,7 @@ app.use((0, _clientActions2['default'])());
        */
 
       function ElementNode(tagName, attributes, key, children) {
-        this.type = "element";
+        this.type = 'element';
         this.attributes = parseAttributes(attributes);
         this.tagName = tagName;
         this.children = children || [];
@@ -1897,7 +1896,7 @@ app.use((0, _clientActions2['default'])());
        */
 
       function TextNode(text) {
-        this.type = "text";
+        this.type = 'text';
         this.data = String(text);
       }
 
@@ -1948,13 +1947,13 @@ app.use((0, _clientActions2['default'])());
        */
 
       function parseStyle(styles) {
-        if (type(styles) === "string") {
+        if (type(styles) === 'string') {
           return styles;
         }
-        var str = "";
+        var str = '';
         for (var name in styles) {
           var value = styles[name];
-          str = str + name + ":" + value + ";";
+          str = str + name + ':' + value + ';';
         }
         return str;
       }
@@ -1970,7 +1969,7 @@ app.use((0, _clientActions2['default'])());
 
       function parseClass(value) {
         // { foo: true, bar: false, baz: true }
-        if (type(value) === "object") {
+        if (type(value) === 'object') {
           var matched = [];
           for (var key in value) {
             if (value[key]) matched.push(key);
@@ -1979,11 +1978,11 @@ app.use((0, _clientActions2['default'])());
         }
 
         // ['foo', 'bar', 'baz']
-        if (type(value) === "array") {
+        if (type(value) === 'array') {
           if (value.length === 0) {
             return;
           }
-          value = value.join(" ");
+          value = value.join(' ');
         }
 
         return value;
@@ -2090,7 +2089,7 @@ app.use((0, _clientActions2['default'])());
 
       Emitter.prototype.on = Emitter.prototype.addEventListener = function (event, fn) {
         this._callbacks = this._callbacks || {};
-        (this._callbacks["$" + event] = this._callbacks["$" + event] || []).push(fn);
+        (this._callbacks['$' + event] = this._callbacks['$' + event] || []).push(fn);
         return this;
       };
 
@@ -2135,12 +2134,12 @@ app.use((0, _clientActions2['default'])());
         }
 
         // specific event
-        var callbacks = this._callbacks["$" + event];
+        var callbacks = this._callbacks['$' + event];
         if (!callbacks) return this;
 
         // remove all handlers
         if (1 == arguments.length) {
-          delete this._callbacks["$" + event];
+          delete this._callbacks['$' + event];
           return this;
         }
 
@@ -2167,7 +2166,7 @@ app.use((0, _clientActions2['default'])());
       Emitter.prototype.emit = function (event) {
         this._callbacks = this._callbacks || {};
         var args = [].slice.call(arguments, 1),
-            callbacks = this._callbacks["$" + event];
+            callbacks = this._callbacks['$' + event];
 
         if (callbacks) {
           callbacks = callbacks.slice(0);
@@ -2189,7 +2188,7 @@ app.use((0, _clientActions2['default'])());
 
       Emitter.prototype.listeners = function (event) {
         this._callbacks = this._callbacks || {};
-        return this._callbacks["$" + event] || [];
+        return this._callbacks['$' + event] || [];
       };
 
       /**
@@ -2249,22 +2248,22 @@ app.use((0, _clientActions2['default'])());
 
       module.exports = function (val) {
         switch (toString.call(val)) {
-          case "[object Date]":
-            return "date";
-          case "[object RegExp]":
-            return "regexp";
-          case "[object Arguments]":
-            return "arguments";
-          case "[object Array]":
-            return "array";
-          case "[object Error]":
-            return "error";
+          case '[object Date]':
+            return 'date';
+          case '[object RegExp]':
+            return 'regexp';
+          case '[object Arguments]':
+            return 'arguments';
+          case '[object Array]':
+            return 'array';
+          case '[object Error]':
+            return 'error';
         }
 
-        if (val === null) return "null";
-        if (val === undefined) return "undefined";
-        if (val !== val) return "nan";
-        if (val && val.nodeType === 1) return "element";
+        if (val === null) return 'null';
+        if (val === undefined) return 'undefined';
+        if (val !== val) return 'nan';
+        if (val && val.nodeType === 1) return 'element';
 
         val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val);
 
@@ -2272,11 +2271,11 @@ app.use((0, _clientActions2['default'])());
       };
     }, {}], 12: [function (_require, module, exports) {
       function Pool(params) {
-        if (typeof params !== "object") {
+        if (typeof params !== 'object') {
           throw new Error("Please pass parameters. Example -> new Pool({ tagName: \"div\" })");
         }
 
-        if (typeof params.tagName !== "string") {
+        if (typeof params.tagName !== 'string') {
           throw new Error("Please specify a tagName. Example -> new Pool({ tagName: \"div\" })");
         }
 
@@ -2320,7 +2319,7 @@ app.use((0, _clientActions2['default'])());
         }
       };
 
-      if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+      if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
         module.exports = Pool;
       }
     }, {}], 13: [function (_require, module, exports) {
@@ -2329,7 +2328,7 @@ app.use((0, _clientActions2['default'])());
       module.exports = iterativelyWalk;
 
       function iterativelyWalk(nodes, cb) {
-        if (!("length" in nodes)) {
+        if (!('length' in nodes)) {
           nodes = [nodes];
         }
 
@@ -2349,9 +2348,9 @@ app.use((0, _clientActions2['default'])());
         }
       }
     }, {}], 14: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
-      var bindInternal3 = _require("../function/bindInternal3");
+      var bindInternal3 = _require('../function/bindInternal3');
 
       /**
        * # For Each
@@ -2371,7 +2370,7 @@ app.use((0, _clientActions2['default'])());
         }
       };
     }, { "../function/bindInternal3": 18 }], 15: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
       /**
        * # Index Of
@@ -2387,7 +2386,7 @@ app.use((0, _clientActions2['default'])());
         var length = subject.length,
             i = 0;
 
-        if (typeof fromIndex === "number") {
+        if (typeof fromIndex === 'number') {
           i = fromIndex;
           if (i < 0) {
             i += length;
@@ -2405,9 +2404,9 @@ app.use((0, _clientActions2['default'])());
         return -1;
       };
     }, {}], 16: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
-      var bindInternal4 = _require("../function/bindInternal4");
+      var bindInternal4 = _require('../function/bindInternal4');
 
       /**
        * # Reduce
@@ -2441,10 +2440,10 @@ app.use((0, _clientActions2['default'])());
         return result;
       };
     }, { "../function/bindInternal4": 19 }], 17: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
-      var forEachArray = _require("./array/forEach"),
-          forEachObject = _require("./object/forEach");
+      var forEachArray = _require('./array/forEach'),
+          forEachObject = _require('./object/forEach');
 
       /**
        * # ForEach
@@ -2463,7 +2462,7 @@ app.use((0, _clientActions2['default'])());
         }
       };
     }, { "./array/forEach": 14, "./object/forEach": 21 }], 18: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
       /**
        * Internal helper to bind a function known to have 3 arguments
@@ -2475,7 +2474,7 @@ app.use((0, _clientActions2['default'])());
         };
       };
     }, {}], 19: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
       /**
        * Internal helper to bind a function known to have 4 arguments
@@ -2487,7 +2486,7 @@ app.use((0, _clientActions2['default'])());
         };
       };
     }, {}], 20: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
       /**
        * Analogue of Object.assign().
@@ -2527,9 +2526,9 @@ app.use((0, _clientActions2['default'])());
         return target;
       };
     }, {}], 21: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
-      var bindInternal3 = _require("../function/bindInternal3");
+      var bindInternal3 = _require('../function/bindInternal3');
 
       /**
        * # For Each
@@ -2552,9 +2551,9 @@ app.use((0, _clientActions2['default'])());
         }
       };
     }, { "../function/bindInternal3": 18 }], 22: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
-      var bindInternal4 = _require("../function/bindInternal4");
+      var bindInternal4 = _require('../function/bindInternal4');
 
       /**
        * # Reduce
@@ -2591,10 +2590,10 @@ app.use((0, _clientActions2['default'])());
         return result;
       };
     }, { "../function/bindInternal4": 19 }], 23: [function (_require, module, exports) {
-      "use strict";
+      'use strict';
 
-      var reduceArray = _require("./array/reduce"),
-          reduceObject = _require("./object/reduce");
+      var reduceArray = _require('./array/reduce'),
+          reduceObject = _require('./object/reduce');
 
       /**
        * # Reduce
@@ -2633,18 +2632,18 @@ app.use((0, _clientActions2['default'])());
        */
 
       module.exports = function isNode(val) {
-        if (!val || typeof val !== "object") return false;
-        if (window && "object" == typeof window.Node) return val instanceof window.Node;
-        return "number" == typeof val.nodeType && "string" == typeof val.nodeName;
+        if (!val || typeof val !== 'object') return false;
+        if (window && 'object' == typeof window.Node) return val instanceof window.Node;
+        return 'number' == typeof val.nodeType && 'string' == typeof val.nodeName;
       };
     }, {}], 26: [function (_require, module, exports) {
       (function (root, factory) {
-        "use strict";
+        'use strict';
 
         /*istanbul ignore next:cant test*/
-        if (typeof module === "object" && typeof module.exports === "object") {
+        if (typeof module === 'object' && typeof module.exports === 'object') {
           module.exports = factory();
-        } else if (typeof define === "function" && define.amd) {
+        } else if (typeof define === 'function' && define.amd) {
           // AMD. Register as an anonymous module.
           define([], factory);
         } else {
@@ -2652,7 +2651,7 @@ app.use((0, _clientActions2['default'])());
           root.objectPath = factory();
         }
       })(this, function () {
-        "use strict";
+        'use strict';
 
         var toStr = Object.prototype.toString,
             _hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -2678,23 +2677,23 @@ app.use((0, _clientActions2['default'])());
         }
 
         function isNumber(value) {
-          return typeof value === "number" || toString(value) === "[object Number]";
+          return typeof value === 'number' || toString(value) === "[object Number]";
         }
 
         function isString(obj) {
-          return typeof obj === "string" || toString(obj) === "[object String]";
+          return typeof obj === 'string' || toString(obj) === "[object String]";
         }
 
         function isObject(obj) {
-          return typeof obj === "object" && toString(obj) === "[object Object]";
+          return typeof obj === 'object' && toString(obj) === "[object Object]";
         }
 
         function isArray(obj) {
-          return typeof obj === "object" && typeof obj.length === "number" && toString(obj) === "[object Array]";
+          return typeof obj === 'object' && typeof obj.length === 'number' && toString(obj) === '[object Array]';
         }
 
         function isBoolean(obj) {
-          return typeof obj === "boolean" || toString(obj) === "[object Boolean]";
+          return typeof obj === 'boolean' || toString(obj) === '[object Boolean]';
         }
 
         function getKey(key) {
@@ -2713,7 +2712,6 @@ app.use((0, _clientActions2['default'])());
                 path = _x2,
                 value = _x3,
                 doNotReplace = _x4;
-            currentPath = oldVal = undefined;
             _again = false;
 
             if (isNumber(path)) {
@@ -2724,7 +2722,7 @@ app.use((0, _clientActions2['default'])());
             }
             if (isString(path)) {
               _x = obj;
-              _x2 = path.split(".").map(getKey);
+              _x2 = path.split('.').map(getKey);
               _x3 = value;
               _x4 = doNotReplace;
               _again = true;
@@ -2754,6 +2752,7 @@ app.use((0, _clientActions2['default'])());
             _x3 = value;
             _x4 = doNotReplace;
             _again = true;
+            currentPath = oldVal = undefined;
             continue _function;
           }
         }
@@ -2764,7 +2763,6 @@ app.use((0, _clientActions2['default'])());
           _function2: while (_again2) {
             var obj = _x5,
                 path = _x6;
-            currentPath = oldVal = undefined;
             _again2 = false;
 
             if (isNumber(path)) {
@@ -2780,7 +2778,7 @@ app.use((0, _clientActions2['default'])());
             }
             if (isString(path)) {
               _x5 = obj;
-              _x6 = path.split(".");
+              _x6 = path.split('.');
               _again2 = true;
               continue _function2;
             }
@@ -2801,6 +2799,7 @@ app.use((0, _clientActions2['default'])());
                 _x5 = obj[currentPath];
                 _x6 = path.slice(1);
                 _again2 = true;
+                currentPath = oldVal = undefined;
                 continue _function2;
               }
             }
@@ -2819,7 +2818,7 @@ app.use((0, _clientActions2['default'])());
           if (isNumber(path)) {
             path = [path];
           } else if (isString(path)) {
-            path = path.split(".");
+            path = path.split('.');
           }
 
           if (isEmpty(path) || path.length === 0) {
@@ -2870,7 +2869,7 @@ app.use((0, _clientActions2['default'])());
           }
 
           if (isString(value)) {
-            return objectPath.set(obj, path, "");
+            return objectPath.set(obj, path, '');
           } else if (isBoolean(value)) {
             return objectPath.set(obj, path, false);
           } else if (isNumber(value)) {
@@ -2921,7 +2920,7 @@ app.use((0, _clientActions2['default'])());
             return defaultValue;
           }
           if (isString(path)) {
-            return objectPath.get(obj, path.split("."), defaultValue);
+            return objectPath.get(obj, path.split('.'), defaultValue);
           }
 
           var currentPath = getKey(path[0]);
@@ -2947,7 +2946,7 @@ app.use((0, _clientActions2['default'])());
        * Module Dependencies.
        */
 
-      var raf = _require("raf");
+      var raf = _require('raf');
 
       /**
        * Export `throttle`.
@@ -2981,7 +2980,7 @@ app.use((0, _clientActions2['default'])());
         };
       }
     }, { "raf": 10 }], 28: [function (_require, module, exports) {
-      module.exports = exports = _require("./lib/sliced");
+      module.exports = exports = _require('./lib/sliced');
     }, { "./lib/sliced": 29 }], 29: [function (_require, module, exports) {
 
       /**
@@ -3137,13 +3136,13 @@ module.exports = exports['default'];
        * Dependencies.
        */
 
-      var sigmoidPrime = require("sigmoid-prime");
-      var Emitter = require("emitter-component");
-      var htanPrime = require("htan-prime");
-      var Matrix = require("node-matrix");
-      var sigmoid = require("sigmoid");
-      var sample = require("samples");
-      var htan = require("htan");
+      var sigmoidPrime = require('sigmoid-prime');
+      var Emitter = require('emitter-component');
+      var htanPrime = require('htan-prime');
+      var Matrix = require('node-matrix');
+      var sigmoid = require('sigmoid');
+      var sample = require('samples');
+      var htan = require('htan');
 
       /**
        * References.
@@ -3173,7 +3172,7 @@ module.exports = exports['default'];
         if (!(this instanceof Mind)) return new Mind(opts);
         opts = opts || {};
 
-        opts.activator === "sigmoid" ? (this.activate = sigmoid, this.activatePrime = sigmoidPrime) : (this.activate = htan, this.activatePrime = htanPrime);
+        opts.activator === 'sigmoid' ? (this.activate = sigmoid, this.activatePrime = sigmoidPrime) : (this.activate = htan, this.activatePrime = htanPrime);
 
         // hyperparameters
         this.learningRate = opts.learningRate || 0.7;
@@ -3214,7 +3213,7 @@ module.exports = exports['default'];
           var results = this.forward(examples);
           var errors = this.back(examples, results);
 
-          this.emit("data", i, errors, results);
+          this.emit('data', i, errors, results);
         }
 
         return this;
@@ -3609,7 +3608,7 @@ module.exports = exports['default'];
               this[i][j] = opts[i][j];
             }
           }
-        } else if (typeof opts === "object") {
+        } else if (typeof opts === 'object') {
           // Passing in dimensions
           this.numRows = opts.rows;
           this.numCols = opts.columns;
@@ -3618,9 +3617,9 @@ module.exports = exports['default'];
             this[i] = [];
 
             for (var j = 0; j < this.numCols; j++) {
-              if (typeof opts.values === "function") {
+              if (typeof opts.values === 'function') {
                 this[i][j] = opts.values();
-              } else if (typeof opts.values === "number") {
+              } else if (typeof opts.values === 'number') {
                 this[i][j] = opts.values;
               } else {
                 this[i][j] = 0;
@@ -3628,7 +3627,7 @@ module.exports = exports['default'];
             }
           }
         } else {
-          throw new Error("You must supply an object or an array");
+          throw new Error('You must supply an object or an array');
         }
 
         this.dimensions = [this.numRows, this.numCols];
@@ -3645,7 +3644,7 @@ module.exports = exports['default'];
       Matrix.add = function (m1, m2) {
         // Number of rows and columns in first must equal number of rows and columns in second
         if (m1.numRows !== m2.numRows || m1.numCols !== m2.numCols) {
-          throw new Error("You can only add matrices with equal dimensions");
+          throw new Error('You can only add matrices with equal dimensions');
         }
 
         var result = new Matrix({ rows: m1.numRows, columns: m1.numCols });
@@ -3670,7 +3669,7 @@ module.exports = exports['default'];
       Matrix.subtract = function (m1, m2) {
         // Number of rows and number of columns in first must equal number of rows and number of columns in second
         if (m1.numRows !== m2.numRows || m1.numCols !== m2.numCols) {
-          throw new Error("You can only subtract matrices with equal dimensions");
+          throw new Error('You can only subtract matrices with equal dimensions');
         }
 
         var result = new Matrix({ rows: m1.numRows, columns: m1.numCols });
